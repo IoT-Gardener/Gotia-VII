@@ -58,6 +58,7 @@ def main():
             st.success(f"Mission Available to: {call_sign}")
             st.write("Mission Brief: Retrieve lost cargo from IPS-Northstar freighter: Solitude. Eliminate any hostiles present.")
             st.write("Reward: 3000 manna")
+            st.info("Report to The Rusty Nail in The Precipice.")
 
         with st.expander("Quell Unrest"):
             st.error(f"Access Denied: {call_sign}")
