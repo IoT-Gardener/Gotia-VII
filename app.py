@@ -54,22 +54,24 @@ def main():
         st.info(f"Restricted Access Granted. Welcome {call_sign} to The Rust & Ruin Registry")
         st.write_stream(stream_data)
 
-        with st.expander("Lost Cargo"):
-            st.success(f"Mission Available to: {call_sign}")
-            st.write("Mission Brief: Retrieve lost cargo from IPS-Northstar freighter: Solitude. Eliminate any hostiles present.")
-            st.write("Reward: 3000 manna")
-            st.info("Report to The Rusty Nail in The Precipice.")
+
 
         with st.expander("Quell Unrest"):
-            st.error(f"Access Denied: {call_sign}")
-            st.write("Mission Brief: Redacted")
-            st.write("Reward: Redacted")
+            st.error(f"Mission Available to: {call_sign}")
+            st.write("Mission Brief: Deep trench miner's are holding a mining corp base hostage requesting 'better wages' and 'a basic quality of life'. They must be ended.")
+            st.write("Reward: 1500 manna")
+            st.info("Report to Sgt Stoneboot at the Ironhusk Foundry.")
 
         with st.expander("Machiavelli Data 'Retrival'"):
-            st.error(f"Access Denied: {call_sign}")
+            st.error(f"Access Denied to: {call_sign}")
             st.write("Mission Brief: Redacted")
             st.write("Reward: Redacted")
 
+
+        with st.expander("Lost Cargo"):
+            st.success(f"Unavailable: Mission Complete")
+            st.write("Mission Brief:Lost cargo from IPS-Northstar freighter: Solitude, retrieved.")
+            st.write("Rewarded: 3000 manna")
 
 if __name__ == "__main__":
     main()
