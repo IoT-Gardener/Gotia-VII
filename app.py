@@ -54,19 +54,15 @@ def main():
         st.info(f"Restricted Access Granted. Welcome {call_sign} to The Rust & Ruin Registry")
         st.write_stream(stream_data)
 
-
-
-        with st.expander("Quell Unrest"):
-            st.error(f"Mission Available to: {call_sign}")
-            st.write("Mission Brief: Deep trench miner's are holding a mining corp base hostage requesting 'better wages' and 'a basic quality of life'. They must be ended.")
-            st.write("Reward: 1500 manna")
-            st.info("Report to Sgt Stoneboot at the Ironhusk Foundry.")
-
         with st.expander("Machiavelli Data 'Retrival'"):
             st.error(f"Access Denied to: {call_sign}")
             st.write("Mission Brief: Redacted")
             st.write("Reward: Redacted")
 
+        with st.expander("Quell Unrest"):
+            st.success(f"Unavailable: Mission Complete")
+            st.write("Mission Brief: Deep trench miner's are holding a mining corp base hostage requesting 'better wages' and 'a basic quality of life'. They must be ended.")
+            st.write("Reward: 1500 manna")
 
         with st.expander("Lost Cargo"):
             st.success(f"Unavailable: Mission Complete")
