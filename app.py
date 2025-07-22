@@ -61,12 +61,12 @@ def main():
 
         with st.expander("Quell Unrest"):
             st.success(f"Unavailable: Mission Complete")
-            st.write("Mission Brief: Deep trench miner's are holding a mining corp base hostage requesting 'better wages' and 'a basic quality of life'. They must be ended.")
+            st.write("Mission Status: Unrest quelled, miner's compliant, casualties high. Full operation restored to deep trench mining operations.")
             st.write("Reward: 1500 manna")
 
         with st.expander("Lost Cargo"):
             st.success(f"Unavailable: Mission Complete")
-            st.write("Mission Brief:Lost cargo from IPS-Northstar freighter: Solitude, retrieved.")
+            st.write("Mission Status: Lost cargo from IPS-Northstar freighter: Solitude, retrieved.")
             st.write("Rewarded: 3000 manna")
 
 if __name__ == "__main__":
