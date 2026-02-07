@@ -54,17 +54,22 @@ def main():
         st.info(f"Restricted Access Granted. Welcome {call_sign} to The Rust & Ruin Registry")
         st.write_stream(stream_data)
 
-        with st.expander("Vane's Sunken Vault"):
+        with st.expander("Turf War"):
             st.info(f"Mission Available to: {call_sign}")
-            st.write("Mission Tags: Infiltration, Aquisition, Exploration.")
-            st.write("Mission Brief: Infiltrate Trade Baron Vane's manor in The Precipice. Retrieve intel on a vast, secret cavern beneath the city. Then, enter and explore the cavern. Expect Vane's heavy security and unknown dangers within the abyss. High risk, high reward. Don't fail.")
-            st.write("Reward: 10,000 credits.")
+            st.write("Mission Tags: Security, Surveillance.")
+            st.write("Mission Brief: Maintain peace between conflicting SSC and Machiavelli Corporation corporate interests at the crash site of the 'Star-Vein' in Salt Flats.")
+            st.write("Reward: 5000 credits.")
             st.success("Report to Crowbar Jones for full mission overview.")
 
         with st.expander("Machiavelli Data 'Retrival'"):
             st.error(f"Access Denied to: {call_sign}")
             st.write("Mission Brief: Redacted")
             st.write("Reward: Redacted")
+
+        with st.expander("Vane's Sunken Vault"):
+            st.success(f"Unavailable: Mission Complete")
+            st.write("Mission Status: Trade Baron Vane's manor infiltrated. Vane's cavern breached and threat neutralised.")
+            st.write("Rewarded: 10,000 credits")
 
         with st.expander("Quell Unrest"):
             st.success(f"Unavailable: Mission Complete")
