@@ -54,32 +54,32 @@ def main():
         st.info(f"Restricted Access Granted. Welcome {call_sign} to The Rust & Ruin Registry")
         st.write_stream(stream_data)
 
-        with st.expander("Turf War"):
-            st.info(f"Mission Available to: {call_sign}")
-            st.write("Mission Tags: Security, Surveillance.")
-            st.write("Mission Brief: Maintain peace between conflicting SSC and Machiavelli Corporation corporate interests at the crash site of the 'Star-Vein' in Salt Flats.")
-            st.write("Reward: 5000 credits.")
-            st.success("Report to Crowbar Jones for full mission overview.")
 
         with st.expander("Machiavelli Data 'Retrival'"):
             st.error(f"Access Denied to: {call_sign}")
             st.write("Mission Brief: Redacted")
             st.write("Reward: Redacted")
 
+        with st.expander("Turf War"):
+            st.error(f"Unavailable: Mission Failed")
+            st.write("Mission Status: Peacekeeping operation at the 'Star-Vein' impact site collapsed. SSC Executive Sybil Vane triggered an orbital kinetic strike ('Silk Road Protocol') from the cruiser Aethelgard, vaporising the Glass Crater, the Star-Vein meteorite, and every Salt Flat colony within the blast radius.")
+            st.write("Fallout: SSC has declared Gotia VII under 'Emergency Scientific Receivership'. Machiavelli Corporation has declared open corporate war from Nuova Firenze. The Rust & Ruin Registry has gone underground. All Registry personnel, assume you are now a target.")
+            st.info("Rewarded: Partial payment disbursed. Remainder withheld pending Registry review.")
+
         with st.expander("Vane's Sunken Vault"):
             st.success(f"Unavailable: Mission Complete")
             st.write("Mission Status: Trade Baron Vane's manor infiltrated. Vane's cavern breached and threat neutralised.")
-            st.write("Rewarded: 10,000 credits")
+            st.info("Rewarded: 10,000 credits")
 
         with st.expander("Quell Unrest"):
             st.success(f"Unavailable: Mission Complete")
             st.write("Mission Status: Unrest quelled, miner's compliant, casualties high. Full operation restored to deep trench mining operations.")
-            st.write("Rewarded: 1500 credits")
+            st.info("Rewarded: 1500 credits")
 
         with st.expander("Lost Cargo"):
             st.success(f"Unavailable: Mission Complete")
             st.write("Mission Status: Lost cargo from IPS-Northstar freighter: Solitude, retrieved.")
-            st.write("Rewarded: 3000 credits")
+            st.info("Rewarded: 3000 credits")
 
 if __name__ == "__main__":
     main()
