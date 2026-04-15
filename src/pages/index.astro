@@ -1,6 +1,12 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import CallsignGate from '../components/CallsignGate.tsx';
+import ActiveOperators from '../components/ActiveOperators.tsx';
+import FlickerNumber from '../components/FlickerNumber.tsx';
+import Redacted from '../components/Redacted.astro';
+import TremorSparkline from '../components/TremorSparkline.tsx';
+import CorpThreatRadar from '../components/CorpThreatRadar.tsx';
+import StatusTicker from '../components/StatusTicker.tsx';
 import { getCollection } from 'astro:content';
 
 const base = import.meta.env.BASE_URL;
@@ -13,7 +19,7 @@ const flashpoints = [
   { label: 'Ironhusk Foundry', status: 'nominal', tone: 'phosphor' },
   { label: 'Nuova Firenze', status: 'elevated', tone: 'rust' },
   { label: 'Glass Crater', status: 'vaporised', tone: 'danger' },
-  { label: 'Gravel Gault', status: 'nominal', tone: 'phosphor' },
+  { label: 'Cairnfrost', status: 'nominal', tone: 'phosphor' },
   { label: 'Caduceus Ring', status: 'hostile', tone: 'rust' },
 ];
 ---
@@ -28,14 +34,23 @@ const flashpoints = [
     </p>
   </section>
 
+  <section class="mb-6 redact-gated">
+    <StatusTicker client:load />
+  </section>
+
   <section class="mb-10">
     <CallsignGate client:load />
   </section>
 
-  <section class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+  <section class="grid md:grid-cols-2 gap-6 mb-10 redact-gated">
+    <TremorSparkline client:load />
+    <CorpThreatRadar client:load />
+  </section>
+
+  <section class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10 redact-gated">
     <div class="panel">
       <p class="panel-head">Active Operators</p>
-      <p class="text-3xl text-phosphor glow tabular-nums">2,847</p>
+      <p class="tabular-nums"><ActiveOperators client:load /></p>
     </div>
     <div class="panel">
       <p class="panel-head">Open Contracts</p>
@@ -43,15 +58,89 @@ const flashpoints = [
     </div>
     <div class="panel">
       <p class="panel-head">Credits Disbursed (YTD)</p>
-      <p class="text-3xl text-phosphor glow tabular-nums">142,981</p>
+      <p class="text-3xl text-phosphor glow">
+        <FlickerNumber
+          client:load
+          start={142981}
+          intervalMs={5200}
+          jitterMs={1800}
+          minDelta={12}
+          maxDelta={340}
+          monotonic
+          format={(n) => n.toLocaleString()}
+        />
+      </p>
     </div>
     <div class="panel">
       <p class="panel-head">Distress Queue</p>
-      <p class="text-3xl text-danger glow-danger tabular-nums">17</p>
+      <p class="text-3xl text-danger glow-danger">
+        <FlickerNumber
+          client:load
+          start={17}
+          min={6}
+          max={29}
+          intervalMs={7400}
+          jitterMs={2600}
+          minDelta={1}
+          maxDelta={1}
+        />
+      </p>
     </div>
   </section>
 
-  <section class="grid md:grid-cols-2 gap-6 mb-10">
+  <section class="panel redact-gated mb-10">
+    <p class="panel-head">IPS-N Lane Latency // Registry Cut-Rate // Smog Index</p>
+    <div class="grid grid-cols-3 gap-4 text-center">
+      <div>
+        <p class="text-2xl text-rust glow-rust">
+          +<FlickerNumber
+            client:load
+            start={48}
+            min={34}
+            max={62}
+            intervalMs={6100}
+            jitterMs={2400}
+            minDelta={1}
+            maxDelta={3}
+          />%
+        </p>
+        <p class="text-xs text-fg-dim tracking-widest uppercase mt-1">Freight Delay</p>
+      </div>
+      <div>
+        <p class="text-2xl text-phosphor glow">
+          <FlickerNumber
+            client:load
+            start={67}
+            min={61}
+            max={72}
+            intervalMs={9300}
+            jitterMs={2800}
+            minDelta={1}
+            maxDelta={1}
+          />%
+        </p>
+        <p class="text-xs text-fg-dim tracking-widest uppercase mt-1">Contractor Cut</p>
+      </div>
+      <div>
+        <p class="text-2xl text-danger glow-danger">
+          <FlickerNumber
+            client:load
+            start={0.94}
+            min={0.78}
+            max={0.99}
+            intervalMs={4300}
+            jitterMs={2100}
+            minDelta={0.01}
+            maxDelta={0.04}
+            decimals={2}
+          />
+        </p>
+        <p class="text-xs text-fg-dim tracking-widest uppercase mt-1">Smog Opacity</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="grid md:grid-cols-2 gap-6 mb-10 redact-gated">
     <div class="panel">
       <p class="panel-head">Flashpoint Board</p>
       <ul class="flex flex-col gap-2 text-sm">
@@ -74,26 +163,12 @@ const flashpoints = [
       <h3 class="text-phosphor mt-1 text-lg">SSC Emergency Scientific Receivership in force</h3>
       <p class="text-fg-dim text-sm mt-2">
         Gotia VII is an occupied planet. Registry communications routed through
-        Crowbar's rig. All operators assume hostile surveillance.
+        <Redacted label="CLASSIFIED">Crowbar's rig</Redacted>. All operators assume hostile surveillance.
       </p>
-    </div>
-  </section>
-
-  <section class="panel">
-    <p class="panel-head">IPS-N Lane Latency // Registry Cut-Rate // Smog Index</p>
-    <div class="grid grid-cols-3 gap-4 text-center">
-      <div>
-        <p class="text-2xl text-rust glow-rust tabular-nums">+48%</p>
-        <p class="text-xs text-fg-dim tracking-widest uppercase mt-1">Freight Delay</p>
-      </div>
-      <div>
-        <p class="text-2xl text-phosphor glow tabular-nums">67%</p>
-        <p class="text-xs text-fg-dim tracking-widest uppercase mt-1">Contractor Cut</p>
-      </div>
-      <div>
-        <p class="text-2xl text-danger glow-danger tabular-nums">0.94</p>
-        <p class="text-xs text-fg-dim tracking-widest uppercase mt-1">Smog Opacity</p>
-      </div>
+      <p class="text-fg-dim text-sm mt-2">
+        Current fallback relay:
+        <Redacted label="NEED-TO-KNOW" level="high">Port Aeturnus subsector grid 14-tango</Redacted>.
+      </p>
     </div>
   </section>
 </Layout>

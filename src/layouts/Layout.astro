@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import { ClientRouter } from 'astro:transitions';
 
 interface Props {
   title?: string;
@@ -24,8 +25,67 @@ const isActive = (match: string) =>
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
     <title>{title} // R.R.R.</title>
+    <ClientRouter />
+    <script>
+      document.addEventListener('astro:after-swap', () => {
+        const body = document.body;
+        body.classList.remove('replay');
+        void body.offsetWidth;
+        body.classList.add('replay');
+      });
+
+      // Toned-down random idle glitches every 20-70s while a page is open
+      let idleTimer: ReturnType<typeof setTimeout> | null = null;
+      function scheduleIdleGlitch() {
+        if (idleTimer) clearTimeout(idleTimer);
+        const delay = 20000 + Math.random() * 50000;
+        idleTimer = setTimeout(() => {
+          const body = document.body;
+          if (!body.classList.contains('replay-active')) {
+            body.classList.add('idle-glitch');
+            setTimeout(() => body.classList.remove('idle-glitch'), 700);
+          }
+          scheduleIdleGlitch();
+        }, delay);
+      }
+      scheduleIdleGlitch();
+      document.addEventListener('astro:after-swap', scheduleIdleGlitch);
+    </script>
+    <script is:inline define:vars={{ base }}>
+      (function () {
+        try {
+          var cs = localStorage.getItem('rrr.callsign');
+          var baseNorm = base.replace(/\/$/, '');
+          var path = window.location.pathname.replace(/\/$/, '');
+          var isTerminal = path === baseNorm || path === '';
+          if (!cs) {
+            document.documentElement.classList.add('no-auth');
+          }
+          document.addEventListener('DOMContentLoaded', function () {
+            if (cs) {
+              document.querySelectorAll('.callsign').forEach(function (el) {
+                el.textContent = cs;
+              });
+              return;
+            }
+            if (isTerminal) return;
+            var overlay = document.createElement('div');
+            overlay.className = 'access-denied';
+            overlay.innerHTML =
+              '<div class="access-denied-panel">' +
+                '<p class="access-denied-head">&#9632;&#9632; ACCESS DENIED &#9632;&#9632;</p>' +
+                '<p class="access-denied-code">ERR 0xC4-REGISTRY // UNVERIFIED OPERATOR</p>' +
+                '<p class="access-denied-body">This node is restricted. The Registry does not extend credit to unknown signals.</p>' +
+                '<p class="access-denied-body">Return to the terminal and authenticate your callsign to continue.</p>' +
+                '<a class="access-denied-link" href="' + base + '">&gt; return to terminal</a>' +
+              '</div>';
+            document.body.appendChild(overlay);
+          });
+        } catch (_) {}
+      })();
+    </script>
   </head>
-  <body class="crt min-h-screen">
+  <body class="crt replay min-h-screen">
     <header class="border-b border-rust-dim px-6 py-4 flex items-center justify-between">
       <a href={base} class="glow font-bold tracking-widest text-phosphor border-b-0">
         ▓▓ R.R.R. / OMNI-NET TERMINAL ▓▓

@@ -1,0 +1,31 @@
+---
+interface Props {
+  label?: string;
+  level?: 'low' | 'high';
+}
+const { label = 'REDACTED', level = 'high' } = Astro.props;
+---
+<span
+  class:list={['redacted', `redacted-${level}`]}
+  role="button"
+  tabindex="0"
+  aria-label={`Classified content. Click to reveal.`}
+  data-label={label}
+>
+  <span class="redacted-content"><slot /></span>
+</span>
+
+<script>
+  document.addEventListener('click', (e) => {
+    const target = (e.target as HTMLElement).closest('.redacted');
+    if (target) target.classList.toggle('revealed');
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    const target = document.activeElement;
+    if (target && target.classList.contains('redacted')) {
+      e.preventDefault();
+      target.classList.toggle('revealed');
+    }
+  });
+</script>

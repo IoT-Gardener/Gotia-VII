@@ -104,6 +104,359 @@
 .notice-error   { color: var(--color-danger);       border-color: var(--color-danger); }
 .notice-success { color: var(--color-bone);         border-color: var(--color-dim-green); }
 
+/* Signal-loss glitch transitions — horizontal jitter, chromatic shifts, focus-blur */
+@keyframes crt-glitch-out {
+  0%   { opacity: 1; filter: none; transform: none; clip-path: inset(0 0 0 0); }
+  12%  { filter: contrast(1.3) brightness(1.2) hue-rotate(-10deg); transform: translate(2px, 0); }
+  22%  { filter: contrast(1.6) saturate(0.4); transform: translate(-4px, 1px); clip-path: inset(12% 0 48% 0); }
+  34%  { filter: brightness(1.8) saturate(0.2) hue-rotate(14deg); transform: translate(6px, -1px); clip-path: inset(38% 0 22% 0); }
+  46%  { filter: brightness(0.5) blur(1px); transform: translate(-3px, 1px); clip-path: inset(0 0 0 0); }
+  60%  { filter: blur(3px) brightness(0.7) saturate(0.3); transform: translate(2px, 0); opacity: 0.8; }
+  80%  { filter: blur(6px) brightness(0.3); opacity: 0.3; }
+  100% { filter: blur(12px) brightness(0); opacity: 0; transform: translate(0, 0); }
+}
+@keyframes crt-glitch-in {
+  0%   { opacity: 0; filter: blur(14px) brightness(0.2); transform: translate(0, 0); }
+  10%  { opacity: 0.35; filter: blur(10px) brightness(1.8) saturate(0.4) hue-rotate(-8deg); transform: translate(-4px, 0); }
+  22%  { opacity: 0.55; filter: blur(6px) brightness(1.3) hue-rotate(10deg); transform: translate(5px, 0); clip-path: inset(20% 0 40% 0); }
+  34%  { opacity: 0.75; filter: blur(3px) saturate(0.5); transform: translate(-3px, 1px); clip-path: inset(44% 0 18% 0); }
+  48%  { opacity: 0.9; filter: blur(1.5px) contrast(1.2); transform: translate(2px, 0); clip-path: inset(0 0 0 0); }
+  62%  { opacity: 0.97; filter: blur(0.6px) brightness(1.15); transform: translate(-1px, 0); }
+  80%  { opacity: 1; filter: none; transform: translate(1px, 0); }
+  100% { opacity: 1; filter: none; transform: none; }
+}
+@keyframes crt-scanline-sweep {
+  0%   { transform: translateY(-30%); opacity: 0.85; }
+  50%  { opacity: 0.55; }
+  100% { transform: translateY(110vh); opacity: 0; }
+}
+
+::view-transition-old(root) {
+  animation: crt-glitch-out 750ms steps(9, end) forwards;
+  transform-origin: center;
+}
+::view-transition-new(root) {
+  animation: crt-glitch-in 1050ms cubic-bezier(0.2, 0.6, 0.4, 1) forwards;
+  transform-origin: center;
+}
+
+/* Scanline sweep overlay during transition */
+html::view-transition-group(root) {
+  isolation: isolate;
+}
+html:has(::view-transition-new(root))::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(255, 179, 71, 0) 45%,
+    rgba(255, 179, 71, 0.4) 49%,
+    rgba(255, 179, 71, 0.9) 50%,
+    rgba(255, 179, 71, 0.4) 51%,
+    rgba(255, 179, 71, 0) 55%,
+    transparent 100%
+  );
+  mix-blend-mode: screen;
+  animation: crt-scanline-sweep 1300ms linear forwards;
+}
+
+/* Fresh page load / return-to-root: replay the same flicker-in */
+@keyframes crt-boot-flicker {
+  0%   { opacity: 0; filter: blur(14px) brightness(0.2); transform: translate(0, 0); }
+  10%  { opacity: 0.35; filter: blur(10px) brightness(1.8) saturate(0.4) hue-rotate(-8deg); transform: translate(-4px, 0); }
+  22%  { opacity: 0.55; filter: blur(6px) brightness(1.3) hue-rotate(10deg); transform: translate(5px, 0); clip-path: inset(20% 0 40% 0); }
+  34%  { opacity: 0.75; filter: blur(3px) saturate(0.5); transform: translate(-3px, 1px); clip-path: inset(44% 0 18% 0); }
+  48%  { opacity: 0.9; filter: blur(1.5px) contrast(1.2); transform: translate(2px, 0); clip-path: inset(0 0 0 0); }
+  62%  { opacity: 0.97; filter: blur(0.6px) brightness(1.15); transform: translate(-1px, 0); }
+  80%  { opacity: 1; filter: none; transform: translate(1px, 0); }
+  100% { opacity: 1; filter: none; transform: none; }
+}
+body.crt {
+  transform-origin: center;
+}
+body.crt.replay {
+  animation: crt-boot-flicker 1100ms cubic-bezier(0.15, 0.5, 0.45, 1) both;
+}
+
+/* Toned-down idle glitch that fires at random intervals */
+@keyframes crt-idle-glitch {
+  0%   { filter: none; transform: none; clip-path: inset(0 0 0 0); }
+  18%  { filter: hue-rotate(-8deg) brightness(1.15) saturate(0.75); transform: translateX(2px); }
+  32%  { filter: brightness(1.25) saturate(0.4); transform: translateX(-4px); clip-path: inset(22% 0 58% 0); }
+  48%  { filter: hue-rotate(6deg) brightness(0.9); transform: translateX(3px); clip-path: inset(52% 0 26% 0); }
+  62%  { filter: brightness(1.05); transform: translateX(-1px); clip-path: inset(0 0 0 0); }
+  78%  { filter: blur(0.4px); transform: translateX(1px); }
+  100% { filter: none; transform: none; clip-path: inset(0 0 0 0); }
+}
+body.crt.idle-glitch {
+  animation: crt-idle-glitch 620ms steps(7, end);
+}
+@media (prefers-reduced-motion: reduce) {
+  body.crt { animation: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+  }
+  html:has(::view-transition-new(root))::before { display: none; }
+}
+
+/* Inline redacted text — hover to peek, click to unlock */
+.redacted {
+  position: relative;
+  display: inline-block;
+  vertical-align: baseline;
+  cursor: pointer;
+  outline: none;
+  padding: 0 2px;
+  line-height: 1.4;
+}
+.redacted .redacted-content {
+  filter: blur(5px) saturate(0.3);
+  background: rgba(90, 40, 20, 0.45);
+  color: var(--color-fg);
+  transition: filter 180ms ease, background 180ms ease, color 180ms ease;
+  -webkit-user-select: none;
+  user-select: none;
+  border-bottom: 1px dashed var(--color-rust);
+}
+.redacted-high .redacted-content {
+  filter: blur(7px) saturate(0.2);
+  background: rgba(196, 58, 45, 0.35);
+}
+.redacted::after {
+  content: "[" attr(data-label) "]";
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 0.72em;
+  letter-spacing: 0.25em;
+  color: var(--color-rust);
+  text-shadow: 0 0 4px var(--color-rust);
+  pointer-events: none;
+  transition: opacity 180ms ease;
+}
+.redacted:hover .redacted-content,
+.redacted:focus .redacted-content {
+  filter: blur(1.5px) saturate(0.6);
+  background: rgba(160, 120, 40, 0.18);
+}
+.redacted:hover::after,
+.redacted:focus::after {
+  opacity: 0.35;
+}
+.redacted.revealed .redacted-content {
+  filter: none;
+  background: rgba(79, 107, 74, 0.15);
+  color: var(--color-bone);
+  border-bottom-color: var(--color-dim-green);
+  user-select: text;
+}
+.redacted.revealed::after {
+  opacity: 0;
+}
+
+/* Omni-net wire ticker */
+.ticker {
+  display: flex;
+  align-items: stretch;
+  border: 1px solid var(--color-rust-dim);
+  background: rgba(13, 11, 18, 0.8);
+  overflow: hidden;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+}
+.ticker-label {
+  flex-shrink: 0;
+  padding: 0.5rem 0.9rem;
+  background: var(--color-rust-dim);
+  color: var(--color-bone);
+  font-family: var(--font-display);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  display: flex;
+  align-items: center;
+  text-shadow: 0 0 4px var(--color-phosphor);
+}
+.ticker-track-wrap {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+  mask-image: linear-gradient(to right, transparent, black 3%, black 97%, transparent);
+}
+.ticker-track {
+  display: inline-flex;
+  white-space: nowrap;
+  animation: ticker-scroll 80s linear infinite;
+  padding: 0.5rem 0;
+}
+.ticker-item { display: inline-flex; align-items: center; gap: 0.6rem; padding: 0 1rem; }
+.ticker-tag {
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  border: 1px solid currentColor;
+  padding: 0 6px;
+}
+.ticker-danger   { color: var(--color-danger); text-shadow: 0 0 4px var(--color-danger); }
+.ticker-rust     { color: var(--color-rust); }
+.ticker-phosphor { color: var(--color-phosphor); text-shadow: 0 0 4px var(--color-phosphor); }
+.ticker-text { color: var(--color-fg); }
+.ticker-sep { color: var(--color-fg-dim); letter-spacing: 0.2em; }
+@keyframes ticker-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* Redact any element marked .redact-gated when user isn't authenticated */
+.no-auth .redact-gated {
+  user-select: none;
+  pointer-events: none;
+  position: relative;
+}
+.no-auth .redact-gated > *,
+.no-auth .redact-gated > astro-island > * {
+  filter: blur(6px) saturate(0.4);
+  opacity: 0.55;
+}
+.no-auth .redact-gated > astro-island { display: contents; }
+.no-auth .redact-gated::after {
+  content: "[ REDACTED ]";
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  letter-spacing: 0.4em;
+  color: var(--color-rust);
+  text-shadow: 0 0 6px var(--color-rust);
+  filter: blur(0);
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+/* Booting: swap REDACTED overlay for a scanning progress bar */
+.no-auth.booting .redact-gated > *,
+.no-auth.booting .redact-gated > astro-island > * {
+  filter: blur(4px) saturate(0.5);
+  opacity: 0.45;
+}
+.no-auth.booting .redact-gated::after {
+  content: "▓ AUTHENTICATING // STAND BY ▓";
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 0.8rem;
+  font-family: var(--font-display);
+  letter-spacing: 0.3em;
+  font-size: 0.75rem;
+  color: var(--color-phosphor);
+  text-shadow: 0 0 6px var(--color-phosphor);
+  background: rgba(7, 6, 10, 0.55);
+  box-shadow: inset 0 0 0 1px var(--color-rust-dim);
+  animation: boot-flicker 1.3s infinite;
+  z-index: 1;
+  pointer-events: none;
+}
+.no-auth.booting .redact-gated::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 6px;
+  width: 100%;
+  background: linear-gradient(90deg, var(--color-phosphor), var(--color-bone));
+  box-shadow: 0 0 10px var(--color-phosphor);
+  transform: scaleX(0);
+  transform-origin: left center;
+  animation: boot-fill 7.8s linear forwards;
+  z-index: 2;
+  pointer-events: none;
+}
+@keyframes boot-fill {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+@keyframes boot-flicker {
+  0%, 100% { opacity: 1; }
+  48% { opacity: 1; }
+  50% { opacity: 0.5; }
+  52% { opacity: 1; }
+}
+
+/* Access-denied overlay for gated pages */
+.access-denied {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  background: rgba(7, 6, 10, 0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  backdrop-filter: blur(4px);
+}
+.access-denied-panel {
+  max-width: 520px;
+  border: 1px solid var(--color-danger);
+  background: rgba(13, 11, 18, 0.95);
+  padding: 1.75rem 2rem;
+  box-shadow: 0 0 24px rgba(196, 58, 45, 0.35);
+  text-align: center;
+}
+.access-denied-head {
+  font-family: var(--font-display);
+  color: var(--color-danger);
+  letter-spacing: 0.35em;
+  font-size: 1.4rem;
+  text-shadow: 0 0 8px var(--color-danger);
+  animation: access-flicker 1.6s infinite;
+  margin-bottom: 0.75rem;
+}
+.access-denied-code {
+  color: var(--color-rust);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+.access-denied-body {
+  color: var(--color-fg-dim);
+  font-size: 0.9rem;
+  margin-bottom: 0.75rem;
+  line-height: 1.5;
+}
+.access-denied-link {
+  display: inline-block;
+  margin-top: 0.75rem;
+  color: var(--color-phosphor);
+  font-family: var(--font-display);
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  border-bottom: 1px dotted var(--color-phosphor-dim);
+}
+@keyframes access-flicker {
+  0%, 100% { opacity: 1; }
+  45% { opacity: 1; }
+  50% { opacity: 0.35; }
+  55% { opacity: 1; }
+}
+
 .panel-head {
   color: var(--color-phosphor);
   font-family: var(--font-display);

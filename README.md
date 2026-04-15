@@ -40,10 +40,17 @@ Deployment happens automatically on push to `main` via `.github/workflows/deploy
 Gotia-VII/
 ├── astro.config.mjs          # Astro + integrations + base path
 ├── src/
-│   ├── styles/global.css     # Theme (amber phosphor), CRT scanlines, notices
-│   ├── layouts/Layout.astro  # Header, nav with active-page marker, footer
+│   ├── styles/global.css     # Theme (amber phosphor), CRT, notices, glitch transitions
+│   ├── layouts/Layout.astro  # Header, nav, ClientRouter, access-gate + idle-glitch scripts
 │   ├── components/
-│   │   └── CallsignGate.tsx  # React island: operator callsign entry
+│   │   ├── CallsignGate.tsx       # Callsign entry + localStorage + boot orchestration
+│   │   ├── BootTerminal.tsx       # Phased typewriter terminal log
+│   │   ├── ActiveOperators.tsx    # Flickering live operator counter
+│   │   ├── FlickerNumber.tsx      # Reusable flickering/drifting counter
+│   │   ├── TremorSparkline.tsx    # Live seismic sparkline + event log
+│   │   ├── CorpThreatRadar.tsx    # Sweeping corp-threat radar
+│   │   ├── StatusTicker.tsx       # Scrolling omni-net wire marquee
+│   │   └── Redacted.astro         # Click-to-reveal redacted span
 │   ├── content.config.ts     # Collection schemas (zod)
 │   ├── content/              # MDX source of truth — one file per entry
 │   │   ├── missions/         # Registry contracts
@@ -72,12 +79,29 @@ Notice callouts (info / warning / error / success) use plain HTML:
 <div class="notice notice-warning">Advisory text here.</div>
 ```
 
+Inline redaction (anywhere, including MDX):
+
+```mdx
+import Redacted from '../../components/Redacted.astro';
+
+The vault code is <Redacted label="CLASSIFIED">4-7-9-2-epsilon</Redacted>.
+```
+
+### Features
+
+- **Callsign gate** — enter any callsign; stored in `localStorage`, shown site-wide.
+- **Boot terminal** — 24-line typewriter sequence on first verification, skippable, scrollable.
+- **Access gating** — non-terminal routes show a flickering `ACCESS DENIED` overlay until authenticated; landing widgets stay blurred under `[ REDACTED ]` / progress bar until boot completes.
+- **Live widgets** — flickering counters (credits, distress queue, lane latency, smog), tremor sparkline with event log, corp-threat radar, omni-net ticker.
+- **Glitch transitions** — CRT signal-loss transitions on every navigation plus a toned-down idle glitch that fires randomly while pages sit open.
+- **Redacted spans** — reusable `<Redacted>` component for lore spoilers; hover to peek, click to unlock.
+
 ### Stack
 
-- **[Astro](https://astro.build)** — static-first framework
+- **[Astro](https://astro.build)** — static-first framework, View Transitions via `ClientRouter`
 - **[Tailwind CSS v4](https://tailwindcss.com)** — CSS-first via `@theme`
 - **MDX** — content with embedded components
-- **React island** — callsign gate only; everything else is static
+- **React islands** — callsign gate, boot terminal, all animated landing widgets
 
 ### Legacy
 
