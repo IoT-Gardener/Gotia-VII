@@ -1,0 +1,27 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('cities');
+  return entries.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const base = import.meta.env.BASE_URL;
+---
+
+<Layout title={entry.data.name} subtitle="// City File">
+  <h1 class="text-3xl glow mb-2">{entry.data.name}</h1>
+  <p class="text-fg-dim italic mb-2">{entry.data.summary}</p>
+  <p class="text-xs text-fg-dim mb-6 tracking-widest uppercase">
+    Region // <a href={`${base}data-bank/regions/${entry.data.region}/`}>{entry.data.region}</a>
+  </p>
+  <article class="text-fg leading-relaxed space-y-4">
+    <Content />
+  </article>
+</Layout>

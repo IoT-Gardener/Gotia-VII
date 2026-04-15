@@ -1,0 +1,23 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('factions');
+  return entries.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+---
+
+<Layout title={entry.data.name} subtitle="// Faction Dossier">
+  <h1 class="text-3xl glow mb-2">{entry.data.name}</h1>
+  <p class="text-fg-dim italic mb-6">{entry.data.summary}</p>
+  <article class="text-fg leading-relaxed space-y-4">
+    <Content />
+  </article>
+</Layout>

@@ -1,0 +1,26 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('missions');
+  return entries.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+---
+
+<Layout title={entry.data.title} subtitle={`// MISSION FILE // ${entry.data.status.toUpperCase()}`}>
+  <h1 class="text-3xl glow mb-2">{entry.data.title}</h1>
+  <p class="text-fg-dim italic mb-6">{entry.data.summary}</p>
+  {entry.data.reward && (
+    <p class="chip text-dim-green mb-6">Reward // {entry.data.reward}</p>
+  )}
+  <article class="text-fg leading-relaxed space-y-4">
+    <Content />
+  </article>
+</Layout>

@@ -1,0 +1,43 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+
+const base = import.meta.env.BASE_URL;
+const factions = (await getCollection('factions')).sort((a, b) => a.data.order - b.data.order);
+const regions = (await getCollection('regions')).sort((a, b) => a.data.order - b.data.order);
+const history = (await getCollection('history')).sort((a, b) => a.data.order - b.data.order);
+
+const sections = [
+  { key: 'factions', label: 'Factions & Political Climate', entries: factions.map((e) => ({ slug: e.id, label: e.data.name, summary: e.data.summary })) },
+  { key: 'regions', label: 'Geography & Regions', entries: regions.map((e) => ({ slug: e.id, label: e.data.name, summary: e.data.summary })) },
+  { key: 'history', label: 'History of Gotia VII', entries: history.map((e) => ({ slug: e.id, label: `${e.data.dateLabel} — ${e.data.title}`, summary: e.data.summary })) },
+];
+---
+
+<Layout title="Data Bank" subtitle="// Knowledge Base // Classified">
+  <h1 class="text-3xl glow mb-4">Registry Data Bank</h1>
+  <div class="notice notice-warning mb-6">ADVISORY: This archive has been updated following the SSC Occupation of 5016u. Records predating the occupation are retained for context and flagged accordingly.</div>
+  <p class="text-fg-dim mb-10 max-w-3xl">
+    Archive of information available to vetted operators. Sections are expanded as
+    intel arrives. If you recover drives of interest, upload them to your local
+    representative for review.
+  </p>
+
+  <div class="flex flex-col gap-10">
+    {sections.map((section) => (
+      <section>
+        <h2 class="text-xl text-phosphor mb-4 tracking-widest">▓ {section.label.toUpperCase()}</h2>
+        <ul class="flex flex-col gap-3">
+          {section.entries.map((e) => (
+            <li class="panel">
+              <h3 class="text-phosphor">
+                <a href={`${base}data-bank/${section.key}/${e.slug}/`}>{e.label}</a>
+              </h3>
+              <p class="text-fg-dim text-sm mt-1">{e.summary}</p>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))}
+  </div>
+</Layout>

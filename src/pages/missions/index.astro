@@ -1,0 +1,45 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+
+const base = import.meta.env.BASE_URL;
+const missions = (await getCollection('missions')).sort(
+  (a, b) => a.data.order - b.data.order
+);
+
+const toneFor = (status: string) => {
+  switch (status) {
+    case 'available': return 'text-phosphor';
+    case 'complete': return 'text-dim-green';
+    case 'failed': return 'text-danger';
+    case 'redacted': return 'text-rust';
+    case 'locked': return 'text-fg-dim';
+    default: return 'text-fg';
+  }
+};
+---
+
+<Layout title="Mission Log" subtitle="// Active / Archived / Sealed">
+  <h1 class="text-3xl glow mb-8">Mission Log</h1>
+
+  <ul class="flex flex-col gap-4">
+    {missions.map((m) => (
+      <li class="panel">
+        <div class="flex items-start justify-between gap-4">
+          <div class="flex-1">
+            <h2 class="text-xl text-phosphor">
+              <a href={`${base}missions/${m.id}/`}>{m.data.title}</a>
+            </h2>
+            <p class="text-fg-dim text-sm mt-2">{m.data.summary}</p>
+            {m.data.reward && (
+              <p class="text-xs text-dim-green mt-2 tracking-widest uppercase">
+                Reward // {m.data.reward}
+              </p>
+            )}
+          </div>
+          <span class:list={['chip', toneFor(m.data.status)]}>{m.data.status}</span>
+        </div>
+      </li>
+    ))}
+  </ul>
+</Layout>
