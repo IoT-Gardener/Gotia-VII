@@ -1,0 +1,24 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('dossier');
+  return entries.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+---
+
+<Layout title={entry.data.name} subtitle={`// ${entry.data.priority === 'one' ? 'PRIORITY ONE' : entry.data.priority === 'two' ? 'PRIORITY TWO' : entry.data.priority === 'archived' ? 'ARCHIVED' : 'REGISTRY ASSET'}`}>
+  <h1 class="text-3xl glow mb-2">{entry.data.name}</h1>
+  <p class="text-xs text-rust tracking-widest uppercase mb-6">{entry.data.affiliation}</p>
+  <p class="text-fg-dim italic mb-6">{entry.data.summary}</p>
+  <article class="text-fg leading-relaxed space-y-4">
+    <Content />
+  </article>
+</Layout>

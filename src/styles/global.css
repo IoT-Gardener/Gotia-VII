@@ -1,0 +1,116 @@
+@import "tailwindcss";
+
+/* RRR — gritty omni-net terminal. Amber phosphor on near-black. */
+@theme {
+  --color-bg: #07060a;
+  --color-bg-elev: #0d0b12;
+  --color-fg: #d9c99b;
+  --color-fg-dim: #7a6c4a;
+  --color-phosphor: #ffb347;
+  --color-phosphor-dim: #a07828;
+  --color-rust: #a5472a;
+  --color-rust-dim: #5a2814;
+  --color-dim-green: #4f6b4a;
+  --color-danger: #c43a2d;
+  --color-bone: #e4d8b4;
+
+  --font-mono: "VT323", "JetBrains Mono", "Fira Code", ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
+  --font-display: "VT323", "JetBrains Mono", ui-monospace, monospace;
+  --font-body: "JetBrains Mono", ui-monospace, monospace;
+}
+
+@layer base {
+  html, body {
+    background: var(--color-bg);
+    color: var(--color-fg);
+    font-family: var(--font-body);
+  }
+  a {
+    color: var(--color-phosphor);
+    text-decoration: none;
+    border-bottom: 1px dotted var(--color-phosphor-dim);
+  }
+  a:hover {
+    color: var(--color-bone);
+    border-bottom-color: var(--color-phosphor);
+    text-shadow: 0 0 4px var(--color-phosphor);
+  }
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-phosphor);
+  }
+  hr {
+    border-color: var(--color-rust-dim);
+  }
+}
+
+/* CRT scanlines — heavier than Operator Console */
+.crt::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(255, 179, 71, 0.05) 0,
+    rgba(255, 179, 71, 0.05) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  mix-blend-mode: screen;
+  z-index: 50;
+}
+
+/* Vignette */
+.crt::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 40%, rgba(0, 0, 0, 0.6) 100%);
+  z-index: 49;
+}
+
+.glow { text-shadow: 0 0 6px var(--color-phosphor); }
+.glow-rust { text-shadow: 0 0 6px var(--color-rust); }
+.glow-danger { text-shadow: 0 0 6px var(--color-danger); }
+
+.chip {
+  display: inline-block;
+  padding: 1px 8px;
+  border: 1px solid currentColor;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.panel {
+  border: 1px solid var(--color-rust-dim);
+  background: rgba(13, 11, 18, 0.6);
+  padding: 1rem 1.25rem;
+}
+
+.notice {
+  border-left: 3px solid currentColor;
+  padding: 0.5rem 0.9rem;
+  margin: 0.75rem 0;
+  font-size: 0.95rem;
+  background: rgba(13, 11, 18, 0.55);
+}
+.notice-info    { color: var(--color-phosphor);     border-color: var(--color-phosphor); }
+.notice-warning { color: var(--color-rust);         border-color: var(--color-rust); }
+.notice-error   { color: var(--color-danger);       border-color: var(--color-danger); }
+.notice-success { color: var(--color-bone);         border-color: var(--color-dim-green); }
+
+.panel-head {
+  color: var(--color-phosphor);
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+  border-bottom: 1px dashed var(--color-rust-dim);
+  padding-bottom: 0.25rem;
+}

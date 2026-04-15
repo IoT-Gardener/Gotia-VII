@@ -1,0 +1,99 @@
+---
+import Layout from '../layouts/Layout.astro';
+import CallsignGate from '../components/CallsignGate.tsx';
+import { getCollection } from 'astro:content';
+
+const base = import.meta.env.BASE_URL;
+
+const missions = await getCollection('missions');
+const openContracts = missions.filter((m) => m.data.status === 'available').length;
+
+const flashpoints = [
+  { label: 'Star-Vein Crater', status: 'lost contact', tone: 'danger' },
+  { label: 'Ironhusk Foundry', status: 'nominal', tone: 'phosphor' },
+  { label: 'Nuova Firenze', status: 'elevated', tone: 'rust' },
+  { label: 'Glass Crater', status: 'vaporised', tone: 'danger' },
+  { label: 'Gravel Gault', status: 'nominal', tone: 'phosphor' },
+  { label: 'Caduceus Ring', status: 'hostile', tone: 'rust' },
+];
+---
+
+<Layout title="Terminal" subtitle="// Encrypted Omni-Net Node">
+  <section class="mb-8">
+    <h1 class="text-4xl md:text-6xl glow tracking-widest">
+      The Rust &amp; Ruin Registry
+    </h1>
+    <p class="text-fg-dim mt-2 uppercase tracking-[0.25em] text-sm">
+      Discretionary operations for qualified freelancers
+    </p>
+  </section>
+
+  <section class="mb-10">
+    <CallsignGate client:load />
+  </section>
+
+  <section class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+    <div class="panel">
+      <p class="panel-head">Active Operators</p>
+      <p class="text-3xl text-phosphor glow tabular-nums">2,847</p>
+    </div>
+    <div class="panel">
+      <p class="panel-head">Open Contracts</p>
+      <p class="text-3xl text-phosphor glow tabular-nums">{openContracts}</p>
+    </div>
+    <div class="panel">
+      <p class="panel-head">Credits Disbursed (YTD)</p>
+      <p class="text-3xl text-phosphor glow tabular-nums">142,981</p>
+    </div>
+    <div class="panel">
+      <p class="panel-head">Distress Queue</p>
+      <p class="text-3xl text-danger glow-danger tabular-nums">17</p>
+    </div>
+  </section>
+
+  <section class="grid md:grid-cols-2 gap-6 mb-10">
+    <div class="panel">
+      <p class="panel-head">Flashpoint Board</p>
+      <ul class="flex flex-col gap-2 text-sm">
+        {flashpoints.map((f) => (
+          <li class="flex items-center justify-between">
+            <span class="text-fg">{f.label}</span>
+            <span class:list={[
+              'chip',
+              f.tone === 'danger' && 'text-danger',
+              f.tone === 'rust' && 'text-rust',
+              f.tone === 'phosphor' && 'text-phosphor',
+            ]}>{f.status}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+    <div class="panel">
+      <p class="panel-head">Standing Advisory</p>
+      <p class="text-xs text-fg-dim tracking-widest uppercase">5016u // OCCUPATION</p>
+      <h3 class="text-phosphor mt-1 text-lg">SSC Emergency Scientific Receivership in force</h3>
+      <p class="text-fg-dim text-sm mt-2">
+        Gotia VII is an occupied planet. Registry communications routed through
+        Crowbar's rig. All operators assume hostile surveillance.
+      </p>
+    </div>
+  </section>
+
+  <section class="panel">
+    <p class="panel-head">IPS-N Lane Latency // Registry Cut-Rate // Smog Index</p>
+    <div class="grid grid-cols-3 gap-4 text-center">
+      <div>
+        <p class="text-2xl text-rust glow-rust tabular-nums">+48%</p>
+        <p class="text-xs text-fg-dim tracking-widest uppercase mt-1">Freight Delay</p>
+      </div>
+      <div>
+        <p class="text-2xl text-phosphor glow tabular-nums">67%</p>
+        <p class="text-xs text-fg-dim tracking-widest uppercase mt-1">Contractor Cut</p>
+      </div>
+      <div>
+        <p class="text-2xl text-danger glow-danger tabular-nums">0.94</p>
+        <p class="text-xs text-fg-dim tracking-widest uppercase mt-1">Smog Opacity</p>
+      </div>
+    </div>
+  </section>
+</Layout>

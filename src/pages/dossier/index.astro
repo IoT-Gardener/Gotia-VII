@@ -1,0 +1,41 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+
+const base = import.meta.env.BASE_URL;
+const entries = await getCollection('dossier');
+const groups = [
+  { key: 'one', label: 'Priority One Targets', entries: entries.filter((e) => e.data.priority === 'one') },
+  { key: 'two', label: 'Priority Two Watchlist', entries: entries.filter((e) => e.data.priority === 'two') },
+  { key: 'asset', label: 'Assets & Allies', entries: entries.filter((e) => e.data.priority === 'asset') },
+  { key: 'archived', label: 'Archived', entries: entries.filter((e) => e.data.priority === 'archived') },
+];
+---
+
+<Layout title="Dossier" subtitle="// Persons of Interest">
+  <h1 class="text-3xl glow mb-4">Registry Dossier</h1>
+  <div class="notice notice-info mb-8">Compiled by the Rust & Ruin Registry for internal use. Update frequency: as circumstances permit. If you are reading this and you are not on the roster, you have already been logged.</div>
+
+  <div class="flex flex-col gap-10">
+    {groups.map((g) => (
+      g.entries.length > 0 && (
+        <section>
+          <h2 class="text-xl text-phosphor tracking-widest mb-4">▓ {g.label.toUpperCase()}</h2>
+          <ul class="flex flex-col gap-3">
+            {g.entries.map((e) => (
+              <li class="panel">
+                <h3 class="text-phosphor">
+                  <a href={`${base}dossier/${e.id}/`}>{e.data.name}</a>
+                </h3>
+                <p class="text-xs text-rust tracking-widest uppercase mt-1">
+                  {e.data.affiliation}
+                </p>
+                <p class="text-fg-dim text-sm mt-2">{e.data.summary}</p>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )
+    ))}
+  </div>
+</Layout>
