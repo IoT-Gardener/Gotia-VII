@@ -52,36 +52,77 @@ const isActive = (match: string) =>
       document.addEventListener('astro:after-swap', scheduleIdleGlitch);
     </script>
     <script is:inline define:vars={{ base }}>
+      // Pre-hydration guard: set no-auth/booting before paint to prevent a
+      // flash of un-redacted content. Full sync runs on astro:page-load below.
       (function () {
         try {
           var cs = localStorage.getItem('rrr.callsign');
-          var baseNorm = base.replace(/\/$/, '');
-          var path = window.location.pathname.replace(/\/$/, '');
-          var isTerminal = path === baseNorm || path === '';
           if (!cs) {
             document.documentElement.classList.add('no-auth');
+            return;
           }
-          document.addEventListener('DOMContentLoaded', function () {
-            if (cs) {
-              document.querySelectorAll('.callsign').forEach(function (el) {
-                el.textContent = cs;
-              });
-              return;
-            }
-            if (isTerminal) return;
-            var overlay = document.createElement('div');
-            overlay.className = 'access-denied';
-            overlay.innerHTML =
-              '<div class="access-denied-panel">' +
-                '<p class="access-denied-head">&#9632;&#9632; ACCESS DENIED &#9632;&#9632;</p>' +
-                '<p class="access-denied-code">ERR 0xC4-REGISTRY // UNVERIFIED OPERATOR</p>' +
-                '<p class="access-denied-body">This node is restricted. The Registry does not extend credit to unknown signals.</p>' +
-                '<p class="access-denied-body">Return to the terminal and authenticate your callsign to continue.</p>' +
-                '<a class="access-denied-link" href="' + base + '">&gt; return to terminal</a>' +
-              '</div>';
-            document.body.appendChild(overlay);
-          });
+          if (!sessionStorage.getItem('rrr.booted')) {
+            document.documentElement.classList.add('no-auth', 'booting');
+          }
         } catch (_) {}
+      })();
+    </script>
+    <script is:inline define:vars={{ base }}>
+      // Runs on every page load AND every ClientRouter navigation. Keeps the
+      // no-auth class, callsign spans, and access-denied overlay in sync with
+      // localStorage state whenever the user lands on or navigates to a page.
+      (function () {
+        var baseNorm = base.replace(/\/$/, '');
+
+        function syncAuthState() {
+          var cs;
+          try { cs = localStorage.getItem('rrr.callsign'); } catch (_) { cs = null; }
+
+          var path = window.location.pathname.replace(/\/$/, '');
+          var isTerminal = path === baseNorm || path === '';
+          var existing = document.querySelector('.access-denied');
+
+          if (cs) {
+            var booted;
+            try { booted = sessionStorage.getItem('rrr.booted'); } catch (_) { booted = null; }
+            if (booted) {
+              document.documentElement.classList.remove('no-auth', 'booting');
+            }
+            document.querySelectorAll('.callsign').forEach(function (el) {
+              el.textContent = cs;
+            });
+            if (existing) existing.remove();
+            return;
+          }
+
+          document.documentElement.classList.add('no-auth');
+          document.querySelectorAll('.callsign').forEach(function (el) {
+            el.textContent = 'Operator';
+          });
+
+          if (isTerminal) {
+            if (existing) existing.remove();
+            return;
+          }
+          if (existing) return;
+
+          var overlay = document.createElement('div');
+          overlay.className = 'access-denied';
+          overlay.innerHTML =
+            '<div class="access-denied-panel">' +
+              '<p class="access-denied-head">&#9632;&#9632; ACCESS DENIED &#9632;&#9632;</p>' +
+              '<p class="access-denied-code">ERR 0xC4-REGISTRY // UNVERIFIED OPERATOR</p>' +
+              '<p class="access-denied-body">This node is restricted. The Registry does not extend credit to unknown signals.</p>' +
+              '<p class="access-denied-body">Return to the terminal and authenticate your callsign to continue.</p>' +
+              '<a class="access-denied-link" href="' + base + '">&gt; return to terminal</a>' +
+            '</div>';
+          document.body.appendChild(overlay);
+        }
+
+        document.addEventListener('astro:page-load', syncAuthState);
+        window.addEventListener('storage', function (e) {
+          if (e.key === 'rrr.callsign') syncAuthState();
+        });
       })();
     </script>
   </head>

@@ -15,7 +15,6 @@ export default function CallsignGate() {
       const isFresh = sessionStorage.getItem(BOOTED_KEY) !== '1';
       setVerified(saved);
       setFreshBoot(isFresh);
-      sessionStorage.setItem(BOOTED_KEY, '1');
       if (isFresh) {
         document.documentElement.classList.add('no-auth', 'booting');
       } else {
@@ -25,6 +24,7 @@ export default function CallsignGate() {
   }, []);
 
   const handleBootDone = () => {
+    sessionStorage.setItem(BOOTED_KEY, '1');
     document.documentElement.classList.remove('no-auth', 'booting');
   };
 
@@ -33,7 +33,6 @@ export default function CallsignGate() {
     const trimmed = callsign.trim();
     if (!trimmed) return;
     localStorage.setItem(STORAGE_KEY, trimmed);
-    sessionStorage.setItem(BOOTED_KEY, '1');
     document.documentElement.classList.add('no-auth', 'booting');
     setVerified(trimmed);
     setFreshBoot(true);
