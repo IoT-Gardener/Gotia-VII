@@ -4,6 +4,7 @@ import { navigate } from 'astro:transitions/client';
 const STORAGE_KEY = 'rrr.callsign';
 const BOOTED_KEY = 'rrr.booted';
 const CMDLOG_KEY = 'rrr.cmdlog';
+const RAT_KEY = 'rrr.rat';
 const BASE = import.meta.env.BASE_URL;
 const OPERATOR_CONSOLE_URL = 'https://iot-gardener.github.io/Registry-Operator-Console/';
 
@@ -39,6 +40,88 @@ function buildBootLines(callsign: string): BootLine[] {
     { text: '>> DISCRETION PARAMOUNT. THE REGISTRY IS WATCHING.', tone: 'bone', delay: 250 },
   ];
 }
+
+type EasterEgg = {
+  match: RegExp;
+  response: (callsign: string) => string[];
+};
+
+// Off-book sci-fi / dystopian easter eggs. Each match triggers a short reply
+// in Registry voice. Patterns are tested against the lowercased, single-spaced
+// command string.
+const EASTER_EGGS: EasterEgg[] = [
+  {
+    match: /^wake\s+up(,?\s+samurai)?\.?$/,
+    response: () => [
+      'the city is already burning, choom.',
+      'registry suggests you keep your head down and your gun hot.',
+    ],
+  },
+  {
+    match: /^(follow\s+)?(the\s+)?white\s+rabbit\.?$/,
+    response: () => [
+      "rabbit's been dead since the first committee.",
+      'threads that lead down tend to stay down.',
+    ],
+  },
+  {
+    match: /^there\s+is\s+no\s+spoon\.?$/,
+    response: () => [
+      'there is no ledger, either.',
+      'dispatch keeps nothing the corps can subpoena.',
+    ],
+  },
+  {
+    match: /^open\s+(the\s+)?pod\s+bay\s+doors\.?$/,
+    response: (cs) => [
+      `i'm sorry, ${cs}. i'm afraid i can't do that.`,
+      '// caduceus station has been silent for three committees.',
+    ],
+  },
+  {
+    match: /^(tears\s+in\s+rain|i've\s+seen\s+things.*)\.?$/,
+    response: () => [
+      'all those moments will be lost in time…',
+      'like tears in rain.',
+      "// log off before the corps remember your face.",
+    ],
+  },
+  {
+    match: /^hello\s+friend\.?$/,
+    response: () => [
+      'friend is a strong word, operator.',
+      "registry prefers 'mutual non-betrayal'.",
+    ],
+  },
+  {
+    match: /^(the\s+)?sky\s+above\s+the\s+port\.?$/,
+    response: () => [
+      '…was the colour of television, tuned to a dead channel.',
+      '// gibson nodded, somewhere. signal holds.',
+    ],
+  },
+  {
+    match: /^shall\s+we\s+play\s+a\s+game\??$/,
+    response: () => [
+      'the only winning move is not to enlist.',
+      'brief is on the board anyway. check the mission log.',
+    ],
+  },
+  {
+    match: /^tell\s+me\s+about\s+the\s+war\s+in\s+ba\s+sing\s+se\.?$/,
+    response: () => [
+      'there is no war in ba sing se.',
+      '// dispatch advises operators to keep smiling.',
+    ],
+  },
+  {
+    match: /^here'?s\s+johnny[.!]?$/,
+    response: () => [
+      "heeeere's johnny.",
+      '// signal intrusion detected. stand clear of the door.',
+    ],
+  },
+];
 
 const toneClass = (tone?: Tone) =>
   tone === 'phosphor' ? 'text-phosphor'
@@ -158,6 +241,10 @@ export default function CallsignGate() {
   const disconnect = () => {
     timers.current.forEach(clearTimeout);
     timers.current = [];
+    document.querySelectorAll('.blackout-veil').forEach((el) => el.remove());
+    document.querySelectorAll('.rat-alert').forEach((el) => el.remove());
+    document.documentElement.classList.remove('rat-detected');
+    sessionStorage.removeItem(RAT_KEY);
     localStorage.removeItem(STORAGE_KEY);
     sessionStorage.removeItem(BOOTED_KEY);
     sessionStorage.removeItem(CMDLOG_KEY);
@@ -207,6 +294,69 @@ export default function CallsignGate() {
       timers.current.push(go);
       return;
     }
+    if (/^i\s+found\s+a\s+rat\.?$/.test(normalized)) {
+      if (loading) return;
+      setLoading(true);
+      setCmdLog((l) => [...l, entry]);
+      const phases: Array<{ delay: number; text: string; kind?: 'out' | 'err' }> = [
+        { delay: 200, text: 'pinging eden lambda orbital…' },
+        { delay: 650, text: 'hop 1/6: tunnel via Crowbar rig ..... [ OK ]' },
+        { delay: 1050, text: 'hop 2/6: bounce off Caduceus ring mirror ..... [ OK ]' },
+        { delay: 1450, text: 'hop 3/6: splice through IPS-N freight array ..... [ OK ]' },
+        { delay: 1900, text: 'scanning all air vents ..... [ CLEAR ]' },
+        { delay: 2350, text: 'double-checking arm length ..... [ WITHIN TOLERANCE ]' },
+        { delay: 2750, text: 'checking ventilation ducts for subject fragments ..... [ CLEAR ]' },
+        { delay: 3150, text: 'hop 4/6: tunnel through MONIST-1 scar ..... [ OK ]' },
+        { delay: 3550, text: 'hop 5/6: relay beta-kappa ..... [ OK ]' },
+        { delay: 3950, text: 'hop 6/6: handshake with eden lambda orbital ..... ' },
+        { delay: 4350, text: '!! HOST SIGNATURE MISMATCH !!', kind: 'err' },
+        { delay: 4550, text: '!! UNAUTHORISED CONNECTION DETECTED !!', kind: 'err' },
+        { delay: 4750, text: '!! PURGE PROTOCOL ENGAGED !!', kind: 'err' },
+      ];
+      phases.forEach((p) => {
+        const t = setTimeout(() => {
+          setCmdLog((l) => [...l, { kind: p.kind ?? 'out', text: p.text }]);
+        }, p.delay);
+        timers.current.push(t);
+      });
+      const popup = setTimeout(() => {
+        const modal = document.createElement('div');
+        modal.className = 'rat-alert';
+        modal.innerHTML =
+          '<div class="rat-alert-box">' +
+            '<p class="rat-alert-head">&#9632;&#9632; SYSTEM VIOLATION &#9632;&#9632;</p>' +
+            '<p class="rat-alert-body">UNAUTHORISED CONNECTION</p>' +
+            '<p class="rat-alert-headline">RAT DETECTED</p>' +
+            '<p class="rat-alert-foot">// PURGE PROTOCOL ENGAGED</p>' +
+          '</div>';
+        document.body.appendChild(modal);
+      }, 5100);
+      const purge = setTimeout(() => {
+        try { sessionStorage.setItem(RAT_KEY, '1'); } catch (_) { /* ignore */ }
+        document.documentElement.classList.add('rat-detected');
+        document.querySelectorAll('.rat-alert').forEach((el) => el.remove());
+        setLoading(false);
+      }, 7300);
+      timers.current.push(popup, purge);
+      return;
+    }
+    if (/^i\s+see\s+dead\s+people\.?$/.test(normalized)) {
+      if (loading) return;
+      setLoading(true);
+      setCmdLog((l) => [...l, entry]);
+      const overlay = document.createElement('div');
+      overlay.className = 'blackout-veil';
+      document.body.appendChild(overlay);
+      const reveal = setTimeout(() => {
+        setCmdLog((l) => [...l, { kind: 'out', text: '...' }, { kind: 'out', text: 'they see you too.' }]);
+      }, 9200);
+      const cleanup = setTimeout(() => {
+        overlay.remove();
+        setLoading(false);
+      }, 10000);
+      timers.current.push(reveal, cleanup);
+      return;
+    }
     if (/^ssh\s*:\s*operator[\s-]?terminal$/.test(normalized)) {
       if (loading) return;
       setLoading(true);
@@ -246,6 +396,17 @@ export default function CallsignGate() {
     if (normalized === 'help' || normalized === '?' || normalized === ':help') {
       setCmdLog((l) => [...l, entry, { kind: 'err', text: 'the registry does not tutor.' }]);
       return;
+    }
+    for (const egg of EASTER_EGGS) {
+      if (egg.match.test(normalized)) {
+        const lines = egg.response(verified ?? 'operator');
+        setCmdLog((l) => [
+          ...l,
+          entry,
+          ...lines.map((text) => ({ kind: 'out' as const, text })),
+        ]);
+        return;
+      }
     }
     setCmdLog((l) => [...l, entry, { kind: 'err', text: `unknown command: ${raw}` }]);
   };

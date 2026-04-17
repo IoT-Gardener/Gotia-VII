@@ -56,6 +56,9 @@ const isActive = (match: string) =>
       // flash of un-redacted content. Full sync runs on astro:page-load below.
       (function () {
         try {
+          if (sessionStorage.getItem('rrr.rat') === '1') {
+            document.documentElement.classList.add('rat-detected');
+          }
           var cs = localStorage.getItem('rrr.callsign');
           if (!cs) {
             document.documentElement.classList.add('no-auth');
@@ -90,6 +93,12 @@ const isActive = (match: string) =>
         function syncAuthState() {
           var cs;
           try { cs = localStorage.getItem('rrr.callsign'); } catch (_) { cs = null; }
+
+          try {
+            if (sessionStorage.getItem('rrr.rat') === '1') {
+              document.documentElement.classList.add('rat-detected');
+            }
+          } catch (_) {}
 
           applyClearance(cs);
 

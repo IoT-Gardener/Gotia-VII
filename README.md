@@ -105,3 +105,20 @@ The vault code is <Redacted label="CLASSIFIED">4-7-9-2-epsilon</Redacted>.
 ### Legacy
 
 The original Streamlit prototype lives in `legacy/` (`Registry_Base.py`, `pages/`, `Images/`, `requirements.txt`). It is no longer maintained and is retained for reference only.
+
+---
+
+## References
+
+- `wake up, samurai`
+- `follow the white rabbit`
+- `there is no spoon`
+- `open the pod bay doors`
+- `tears in rain`
+- `hello friend`
+- `the sky above the port`
+- `shall we play a game`
+- `i see dead people`
+- `tell me about the war in ba sing se`
+- `here's johnny`
+- `i found a rat`
