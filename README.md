@@ -20,14 +20,23 @@ Then:
 
 ```sh
 npm install
-npm run dev       # http://localhost:4321/Gotia-VII/
+npm run dev       # http://localhost:4321/Gotia-VII/ — fast iteration, no search
 ```
+
+To run locally **with the terminal `search:` command working**, generate the Pagefind index first, then start the dev server:
+
+```sh
+npm run search:index && npm run dev
+```
+
+Re-run `npm run search:index` after content changes to refresh the index.
 
 ### Other commands
 
 ```sh
-npm run build     # static build → ./dist/
-npm run preview   # serve the built site locally
+npm run build       # static build → ./dist/ (includes pagefind index)
+npm run preview     # serve the built site locally
+npm run search:index  # build + copy pagefind index into public/ for dev
 ```
 
 Deployment happens automatically on push to `main` via `.github/workflows/deploy.yml`.
@@ -94,6 +103,7 @@ The vault code is <Redacted label="CLASSIFIED">4-7-9-2-epsilon</Redacted>.
 - **Live widgets** — flickering counters (credits, distress queue, lane latency, smog), tremor sparkline with event log, corp-threat radar, omni-net ticker.
 - **Glitch transitions** — CRT signal-loss transitions on every navigation plus a toned-down idle glitch that fires randomly while pages sit open.
 - **Redacted spans** — reusable `<Redacted>` component for lore spoilers; hover to peek, click to unlock.
+- **Terminal search** — `search --<query>` (also `find --<q>` / `grep --<q>`) runs a Pagefind full-text search across missions / dossier / data bank and streams clickable results into the command log. Index built as part of `npm run build` (served from `dist/`); for dev, run `npm run search:index` once to populate `public/pagefind/` so `astro dev` can serve it.
 
 ### Stack
 

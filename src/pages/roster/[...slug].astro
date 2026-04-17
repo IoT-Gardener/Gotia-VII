@@ -21,6 +21,7 @@ const allow = entry.data.clearance?.map((c) => c.toLowerCase()).join(',');
   <div
     class:list={[allow && 'clearance-gate clearance-gate-block']}
     data-clearance-allow={allow}
+    data-pagefind-ignore="all"
   >
     <div class="clearance-content">
       <h1 class="text-3xl glow mb-1">{entry.data.callsign}</h1>

@@ -170,3 +170,5 @@ pnpm-debug.log*
 .env.production
 .DS_Store
 .vscode
+# Pagefind index copied into public/ for dev-server access
+public/pagefind/

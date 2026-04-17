@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 
 const HEADLINES = [
   { tag: 'ALERT',   text: 'SSC Constellation sweep rerouting over Nuova Firenze. Operators: reduce signal profile.', tone: 'danger' },
-  { tag: 'LEDGER',  text: 'Bounty raised on "One-Eye" // Iron Rat deserters // payout now 14k manna.', tone: 'rust' },
+  { tag: 'LEDGER',  text: 'Bounty raised on "One-Eye" // Iron Rat deserters // payout now 14k credits.', tone: 'rust' },
   { tag: 'WEATHER', text: 'Smog Opacity 0.94 at Port Aeturnus // lane-latency freight +48% // HA convoys grounded.', tone: 'phosphor' },
   { tag: 'RUMOR',   text: 'Machiavelli data-cache reported intact under Ironhusk Foundry. Registry neither confirms nor denies.', tone: 'rust' },
   { tag: 'INCIDENT',text: 'Glass Crater scavenger team lost contact 04:17 local. Distress beacon unresolved.', tone: 'danger' },
