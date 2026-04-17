@@ -70,6 +70,7 @@ const lancers = defineCollection({
     ref: z.string().optional(),
     status: z.enum(['active', 'mia', 'kia', 'unknown']).default('active'),
     summary: z.string(),
+    clearance: z.array(z.string()).optional(),
   }),
 });
 

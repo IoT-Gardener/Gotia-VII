@@ -24,23 +24,31 @@ const statusTone = (s: string) =>
     <p class="text-fg-dim">No contractors on file.</p>
   ) : (
     <ul class="flex flex-col gap-3">
-      {entries.map((e) => (
-        <li class="panel">
-          <div class="flex items-baseline justify-between gap-4">
-            <h2 class="text-phosphor text-lg">
-              <a href={`${base}roster/${e.id}/`}>{e.data.callsign}</a>
-              <span class="text-fg-dim text-sm ml-2">// {e.data.name}</span>
-            </h2>
-            <span class:list={['chip', statusTone(e.data.status)]}>
-              {e.data.status.toUpperCase()}
-            </span>
-          </div>
-          {e.data.affiliation && (
-            <p class="text-xs text-rust tracking-widest uppercase mt-1">{e.data.affiliation}</p>
-          )}
-          <p class="text-fg-dim text-sm mt-2">{e.data.summary}</p>
-        </li>
-      ))}
+      {entries.map((e) => {
+        const allow = e.data.clearance?.map((c) => c.toLowerCase()).join(',');
+        return (
+          <li
+            class:list={['panel', allow && 'clearance-gate']}
+            data-clearance-allow={allow}
+          >
+            <div class="clearance-content">
+              <div class="flex items-baseline justify-between gap-4">
+                <h2 class="text-phosphor text-lg">
+                  <a href={`${base}roster/${e.id}/`}>{e.data.callsign}</a>
+                  <span class="text-fg-dim text-sm ml-2">// {e.data.name}</span>
+                </h2>
+                <span class:list={['chip', statusTone(e.data.status)]}>
+                  {e.data.status.toUpperCase()}
+                </span>
+              </div>
+              {e.data.affiliation && (
+                <p class="text-xs text-rust tracking-widest uppercase mt-1">{e.data.affiliation}</p>
+              )}
+              <p class="text-fg-dim text-sm mt-2">{e.data.summary}</p>
+            </div>
+          </li>
+        );
+      })}
     </ul>
   )}
 </Layout>

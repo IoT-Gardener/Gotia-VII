@@ -43,8 +43,7 @@ Gotia-VII/
 │   ├── styles/global.css     # Theme (amber phosphor), CRT, notices, glitch transitions
 │   ├── layouts/Layout.astro  # Header, nav, ClientRouter, access-gate + idle-glitch scripts
 │   ├── components/
-│   │   ├── CallsignGate.tsx       # Callsign entry + localStorage + boot orchestration
-│   │   ├── BootTerminal.tsx       # Phased typewriter terminal log
+│   │   ├── CallsignGate.tsx       # Unified terminal: callsign gate, typewriter boot log, post-boot command prompt (query: roster → /roster/)
 │   │   ├── ActiveOperators.tsx    # Flickering live operator counter
 │   │   ├── FlickerNumber.tsx      # Reusable flickering/drifting counter
 │   │   ├── TremorSparkline.tsx    # Live seismic sparkline + event log

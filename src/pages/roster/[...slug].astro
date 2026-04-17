@@ -14,34 +14,42 @@ const { entry } = Astro.props;
 const { Content } = await render(entry);
 
 const statusLabel = entry.data.status.toUpperCase();
+const allow = entry.data.clearance?.map((c) => c.toLowerCase()).join(',');
 ---
 
 <Layout title={entry.data.callsign} subtitle={`// ROSTER // ${statusLabel}`}>
-  <h1 class="text-3xl glow mb-1">{entry.data.callsign}</h1>
-  <p class="text-fg-dim tracking-widest uppercase text-sm mb-2">{entry.data.name}</p>
-  {entry.data.affiliation && (
-    <p class="text-xs text-rust tracking-widest uppercase mb-4">{entry.data.affiliation}</p>
-  )}
-  <p class="text-fg-dim italic mb-6">{entry.data.summary}</p>
+  <div
+    class:list={[allow && 'clearance-gate clearance-gate-block']}
+    data-clearance-allow={allow}
+  >
+    <div class="clearance-content">
+      <h1 class="text-3xl glow mb-1">{entry.data.callsign}</h1>
+      <p class="text-fg-dim tracking-widest uppercase text-sm mb-2">{entry.data.name}</p>
+      {entry.data.affiliation && (
+        <p class="text-xs text-rust tracking-widest uppercase mb-4">{entry.data.affiliation}</p>
+      )}
+      <p class="text-fg-dim italic mb-6">{entry.data.summary}</p>
 
-  <dl class="grid grid-cols-2 gap-3 text-sm mb-8">
-    {entry.data.mech && (
-      <>
-        <dt class="text-fg-dim uppercase tracking-widest text-xs">Mech</dt>
-        <dd class="text-phosphor">{entry.data.mech}</dd>
-      </>
-    )}
-    {entry.data.ref && (
-      <>
-        <dt class="text-fg-dim uppercase tracking-widest text-xs">Lancer Ref#</dt>
-        <dd class="text-phosphor font-mono">{entry.data.ref}</dd>
-      </>
-    )}
-    <dt class="text-fg-dim uppercase tracking-widest text-xs">Status</dt>
-    <dd class="text-phosphor">{statusLabel}</dd>
-  </dl>
+      <dl class="grid grid-cols-2 gap-3 text-sm mb-8">
+        {entry.data.mech && (
+          <>
+            <dt class="text-fg-dim uppercase tracking-widest text-xs">Mech</dt>
+            <dd class="text-phosphor">{entry.data.mech}</dd>
+          </>
+        )}
+        {entry.data.ref && (
+          <>
+            <dt class="text-fg-dim uppercase tracking-widest text-xs">Lancer Ref#</dt>
+            <dd class="text-phosphor font-mono">{entry.data.ref}</dd>
+          </>
+        )}
+        <dt class="text-fg-dim uppercase tracking-widest text-xs">Status</dt>
+        <dd class="text-phosphor">{statusLabel}</dd>
+      </dl>
 
-  <article class="text-fg leading-relaxed space-y-4">
-    <Content />
-  </article>
+      <article class="text-fg leading-relaxed space-y-4">
+        <Content />
+      </article>
+    </div>
+  </div>
 </Layout>

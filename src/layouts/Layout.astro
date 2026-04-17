@@ -74,9 +74,24 @@ const isActive = (match: string) =>
       (function () {
         var baseNorm = base.replace(/\/$/, '');
 
+        function applyClearance(cs) {
+          var norm = (cs || '').trim().toLowerCase();
+          document.querySelectorAll('.clearance-gate').forEach(function (el) {
+            var raw = el.getAttribute('data-clearance-allow') || '';
+            var allow = raw.split(',').map(function (s) { return s.trim().toLowerCase(); }).filter(Boolean);
+            if (allow.length === 0 || (norm && allow.indexOf(norm) !== -1)) {
+              el.classList.add('unlocked');
+            } else {
+              el.classList.remove('unlocked');
+            }
+          });
+        }
+
         function syncAuthState() {
           var cs;
           try { cs = localStorage.getItem('rrr.callsign'); } catch (_) { cs = null; }
+
+          applyClearance(cs);
 
           var path = window.location.pathname.replace(/\/$/, '');
           var isTerminal = path === baseNorm || path === '';

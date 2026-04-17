@@ -489,6 +489,43 @@ body.crt.idle-glitch {
   52% { opacity: 1; }
 }
 
+/* Clearance gating — content hidden behind an operator-level allowlist.
+   Markup: add class `clearance-gate` + `data-clearance-allow="callsign[,callsign]"`
+   to a wrapper. Children go inside `.clearance-content`. A script in Layout.astro
+   adds `.unlocked` when the current callsign matches; until then the content is
+   blurred and a REDACTED overlay is shown. */
+.clearance-gate {
+  position: relative;
+}
+.clearance-gate:not(.unlocked) > .clearance-content {
+  filter: blur(7px) saturate(0.25);
+  opacity: 0.3;
+  pointer-events: none;
+  user-select: none;
+}
+.clearance-gate:not(.unlocked)::after {
+  content: "▓▓ CLEARANCE INSUFFICIENT // REDACTED ▓▓";
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  letter-spacing: 0.35em;
+  font-size: 0.85rem;
+  color: var(--color-rust);
+  text-shadow: 0 0 8px var(--color-rust);
+  text-align: center;
+  padding: 1rem;
+  background: rgba(7, 6, 10, 0.45);
+  box-shadow: inset 0 0 0 1px var(--color-rust-dim);
+  animation: boot-flicker 1.6s infinite;
+}
+.clearance-gate-block:not(.unlocked)::after {
+  font-size: 1rem;
+  letter-spacing: 0.45em;
+}
+
 /* Access-denied overlay for gated pages */
 .access-denied {
   position: fixed;
