@@ -1,13 +1,20 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { navigate } from 'astro:transitions/client';
 import BootTerminal from './BootTerminal';
 
 const STORAGE_KEY = 'rrr.callsign';
 const BOOTED_KEY = 'rrr.booted';
+const BASE = import.meta.env.BASE_URL;
+
+type LogEntry = { kind: 'cmd' | 'out' | 'err'; text: string };
 
 export default function CallsignGate() {
   const [callsign, setCallsign] = useState('');
   const [verified, setVerified] = useState<string | null>(null);
   const [freshBoot, setFreshBoot] = useState(false);
+  const [cmd, setCmd] = useState('');
+  const [log, setLog] = useState<LogEntry[]>([]);
+  const logRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
@@ -22,6 +29,10 @@ export default function CallsignGate() {
       }
     }
   }, []);
+
+  useEffect(() => {
+    if (logRef.current) logRef.current.scrollTop = logRef.current.scrollHeight;
+  }, [log]);
 
   const handleBootDone = () => {
     sessionStorage.setItem(BOOTED_KEY, '1');
@@ -49,12 +60,47 @@ export default function CallsignGate() {
     setVerified(null);
     setFreshBoot(false);
     setCallsign('');
+    setLog([]);
+    setCmd('');
     document.querySelectorAll<HTMLElement>('.callsign').forEach((el) => {
       el.textContent = 'Operator';
     });
   };
 
+  const runCommand = (e: React.FormEvent) => {
+    e.preventDefault();
+    const raw = cmd.trim();
+    if (!raw) return;
+    const normalized = raw.toLowerCase().replace(/\s+/g, ' ');
+    const entry: LogEntry = { kind: 'cmd', text: raw };
+    setCmd('');
+
+    if (/^query\s*:\s*roster$/.test(normalized)) {
+      setLog((l) => [...l, entry, { kind: 'out', text: 'routing ledger-locked node…' }]);
+      setTimeout(() => navigate(BASE + 'roster/'), 500);
+      return;
+    }
+    if (normalized === 'clear' || normalized === ':clear') {
+      setLog([]);
+      return;
+    }
+    if (normalized === 'whoami' || normalized === ':whoami') {
+      setLog((l) => [...l, entry, { kind: 'out', text: verified ?? 'unknown' }]);
+      return;
+    }
+    if (normalized === 'disconnect' || normalized === ':disconnect') {
+      disconnect();
+      return;
+    }
+    if (normalized === 'help' || normalized === '?' || normalized === ':help') {
+      setLog((l) => [...l, entry, { kind: 'err', text: 'the registry does not tutor.' }]);
+      return;
+    }
+    setLog((l) => [...l, entry, { kind: 'err', text: `unknown command: ${raw}` }]);
+  };
+
   if (verified) {
+    const prompt = `${verified.toUpperCase()}@R.R.R.`;
     return (
       <div className="flex flex-col gap-4">
         <BootTerminal callsign={verified} instant={!freshBoot} onDone={handleBootDone} />
@@ -73,6 +119,45 @@ export default function CallsignGate() {
               disconnect
             </button>
           </p>
+
+          {log.length > 0 && (
+            <div
+              ref={logRef}
+              className="mt-4 max-h-32 overflow-y-auto bg-black/40 border border-rust-dim px-2 py-1 font-mono text-xs flex flex-col gap-0.5"
+              style={{ scrollbarWidth: 'thin', scrollbarColor: '#5a2814 transparent' }}
+            >
+              {log.map((e, i) => (
+                <p
+                  key={i}
+                  className={
+                    e.kind === 'cmd'
+                      ? 'text-bone'
+                      : e.kind === 'err'
+                      ? 'text-rust'
+                      : 'text-phosphor'
+                  }
+                >
+                  {e.kind === 'cmd' ? `${prompt} > ${e.text}` : `  ${e.text}`}
+                </p>
+              ))}
+            </div>
+          )}
+
+          <form
+            onSubmit={runCommand}
+            className="mt-3 flex items-center gap-2 font-mono text-sm"
+          >
+            <span className="text-phosphor glow whitespace-nowrap">{prompt} &gt;</span>
+            <input
+              type="text"
+              value={cmd}
+              onChange={(e) => setCmd(e.target.value)}
+              className="bg-transparent outline-none flex-1 text-phosphor placeholder-fg-dim/60 border-b border-rust-dim focus:border-phosphor px-1 py-1"
+              autoComplete="off"
+              spellCheck={false}
+              aria-label="Terminal command"
+            />
+          </form>
         </div>
       </div>
     );

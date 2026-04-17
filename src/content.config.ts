@@ -60,4 +60,17 @@ const history = defineCollection({
   }),
 });
 
-export const collections = { missions, dossier, regions, cities, factions, history };
+const lancers = defineCollection({
+  loader: glob({ pattern: '**/*.mdx', base: './src/content/lancers' }),
+  schema: z.object({
+    callsign: z.string(),
+    name: z.string(),
+    mech: z.string().optional(),
+    affiliation: z.string().optional(),
+    ref: z.string().optional(),
+    status: z.enum(['active', 'mia', 'kia', 'unknown']).default('active'),
+    summary: z.string(),
+  }),
+});
+
+export const collections = { missions, dossier, regions, cities, factions, history, lancers };

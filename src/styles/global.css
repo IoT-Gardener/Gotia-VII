@@ -104,6 +104,97 @@
 .notice-error   { color: var(--color-danger);       border-color: var(--color-danger); }
 .notice-success { color: var(--color-bone);         border-color: var(--color-dim-green); }
 
+/* Stylised transmission/log envelope — used for audio-fragment transcripts.
+   Contains system-tag lines (.audio-sys), stage directions (.audio-stage),
+   and two-voice dialogue (.voice, .voice-1, .voice-2). */
+.audio-log {
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  line-height: 1.45;
+  letter-spacing: 0.04em;
+  color: var(--color-fg);
+  background: rgba(13, 11, 18, 0.75);
+  border: 1px dashed var(--color-rust);
+  border-left-width: 3px;
+  padding: 1rem 1.15rem;
+  margin: 1rem 0;
+  position: relative;
+  animation: audio-log-flicker 4.2s infinite;
+}
+.audio-log::before {
+  content: "▓▓ AUDIO-FRAGMENT ▓▓";
+  display: block;
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  letter-spacing: 0.35em;
+  color: var(--color-rust);
+  text-shadow: 0 0 4px var(--color-rust-dim);
+  margin-bottom: 0.7rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px dashed var(--color-rust-dim);
+}
+@keyframes audio-log-flicker {
+  0%, 100% { opacity: 1; }
+  48% { opacity: 1; }
+  50% { opacity: 0.86; }
+  52% { opacity: 1; }
+}
+
+/* System-tag lines inside the audio log */
+.audio-log .audio-sys {
+  font-family: var(--font-display);
+  color: var(--color-phosphor);
+  text-shadow: 0 0 4px var(--color-phosphor-dim);
+  letter-spacing: 0.04em;
+  margin: 0.15rem 0;
+  white-space: pre-wrap;
+}
+
+/* Stage directions / audio description, e.g. -doors hiss open- */
+.audio-log .audio-stage {
+  color: var(--color-fg-dim);
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-style: italic;
+  text-align: center;
+  letter-spacing: 0.1em;
+  margin: 0.9rem 0;
+  text-shadow: none;
+}
+
+/* Dialogue lines */
+.audio-log .voice {
+  margin: 0.55rem 0;
+  padding: 0.4rem 0.75rem;
+  border-left: 2px solid transparent;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  line-height: 1.55;
+  letter-spacing: 0.02em;
+  color: var(--color-bone);
+}
+.audio-log .voice-label {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 0.68rem;
+  letter-spacing: 0.3em;
+  margin-right: 0.6rem;
+  padding: 0 0.45rem;
+  border: 1px solid currentColor;
+  vertical-align: 2px;
+}
+.audio-log .voice-1 {
+  border-left-color: var(--color-rust);
+  background: linear-gradient(90deg, rgba(165, 71, 42, 0.08), transparent 60%);
+}
+.audio-log .voice-1 .voice-label { color: var(--color-rust); }
+.audio-log .voice-2 {
+  margin-left: 1.75rem;
+  border-left-color: var(--color-phosphor);
+  background: linear-gradient(90deg, rgba(255, 179, 71, 0.08), transparent 60%);
+}
+.audio-log .voice-2 .voice-label { color: var(--color-phosphor); }
+
 /* Signal-loss glitch transitions — horizontal jitter, chromatic shifts, focus-blur */
 @keyframes crt-glitch-out {
   0%   { opacity: 1; filter: none; transform: none; clip-path: inset(0 0 0 0); }

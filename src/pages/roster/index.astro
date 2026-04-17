@@ -1,0 +1,46 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+
+const base = import.meta.env.BASE_URL;
+const entries = (await getCollection('lancers')).sort((a, b) =>
+  a.data.callsign.localeCompare(b.data.callsign),
+);
+
+const statusTone = (s: string) =>
+  s === 'active' ? 'text-phosphor' :
+  s === 'mia' ? 'text-rust' :
+  s === 'kia' ? 'text-danger' :
+  'text-fg-dim';
+---
+
+<Layout title="Roster" subtitle="// Ledger-Locked // Registry Lancers">
+  <h1 class="text-3xl glow mb-4">Contractor Roster</h1>
+  <div class="notice notice-warning mb-8">
+    Off-ledger record. Not indexed on the omni-net. If you reached this node without a direct pointer from Dispatch, forget you saw it.
+  </div>
+
+  {entries.length === 0 ? (
+    <p class="text-fg-dim">No contractors on file.</p>
+  ) : (
+    <ul class="flex flex-col gap-3">
+      {entries.map((e) => (
+        <li class="panel">
+          <div class="flex items-baseline justify-between gap-4">
+            <h2 class="text-phosphor text-lg">
+              <a href={`${base}roster/${e.id}/`}>{e.data.callsign}</a>
+              <span class="text-fg-dim text-sm ml-2">// {e.data.name}</span>
+            </h2>
+            <span class:list={['chip', statusTone(e.data.status)]}>
+              {e.data.status.toUpperCase()}
+            </span>
+          </div>
+          {e.data.affiliation && (
+            <p class="text-xs text-rust tracking-widest uppercase mt-1">{e.data.affiliation}</p>
+          )}
+          <p class="text-fg-dim text-sm mt-2">{e.data.summary}</p>
+        </li>
+      ))}
+    </ul>
+  )}
+</Layout>
