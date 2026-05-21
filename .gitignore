@@ -172,3 +172,9 @@ pnpm-debug.log*
 .vscode
 # Pagefind index copied into public/ for dev-server access
 public/pagefind/
+
+graphify-out/
+.gitnexus/
+AGENTS.md
+CLAUDE.md
+.claude
