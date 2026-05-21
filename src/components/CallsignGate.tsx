@@ -834,7 +834,7 @@ export default function CallsignGate() {
       <div
         ref={scrollRef}
         className="overflow-y-auto h-56 border border-rust-dim bg-black/40 px-2 py-1"
-        style={{ scrollbarWidth: 'thin', scrollbarColor: '#5a2814 transparent' }}
+        style={{ scrollbarWidth: 'thin', scrollbarColor: '#3d1066 transparent' }}
       >
         <ul className="flex flex-col gap-0.5 leading-tight whitespace-pre">
           {bootLines.slice(0, visible).map((line, i) => (

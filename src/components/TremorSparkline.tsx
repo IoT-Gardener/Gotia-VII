@@ -122,20 +122,20 @@ export default function TremorSparkline() {
       <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} className="w-full h-20 flex-shrink-0" preserveAspectRatio="none">
         <defs>
           <linearGradient id="trem" x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0%" stopColor={alert ? '#c43a2d' : '#ffb347'} stopOpacity="0.4" />
-            <stop offset="100%" stopColor={alert ? '#c43a2d' : '#ffb347'} stopOpacity="0" />
+            <stop offset="0%" stopColor={alert ? '#ff3366' : '#00d4ff'} stopOpacity="0.4" />
+            <stop offset="100%" stopColor={alert ? '#ff3366' : '#00d4ff'} stopOpacity="0" />
           </linearGradient>
         </defs>
         {[0.25, 0.5, 0.75].map((y) => (
-          <line key={y} x1="0" x2={WIDTH} y1={HEIGHT * y} y2={HEIGHT * y} stroke="#5a2814" strokeWidth="0.5" strokeDasharray="2 3" />
+          <line key={y} x1="0" x2={WIDTH} y1={HEIGHT * y} y2={HEIGHT * y} stroke="#3d1066" strokeWidth="0.5" strokeDasharray="2 3" />
         ))}
         <path d={`${path} L${WIDTH},${HEIGHT} L0,${HEIGHT} Z`} fill="url(#trem)" />
         <path
           d={path}
           fill="none"
-          stroke={alert ? '#c43a2d' : '#ffb347'}
+          stroke={alert ? '#ff3366' : '#00d4ff'}
           strokeWidth="1.5"
-          style={{ filter: `drop-shadow(0 0 3px ${alert ? '#c43a2d' : '#ffb347'})` }}
+          style={{ filter: `drop-shadow(0 0 3px ${alert ? '#ff3366' : '#00d4ff'})` }}
         />
       </svg>
       <div className="flex items-center justify-between mt-2 mb-1 flex-shrink-0">
@@ -145,7 +145,7 @@ export default function TremorSparkline() {
       <div
         ref={logRef}
         className="overflow-y-auto border border-rust-dim bg-black/40 px-2 py-1 font-mono text-[11px] flex-1 min-h-0"
-        style={{ scrollbarWidth: 'thin', scrollbarColor: '#5a2814 transparent' }}
+        style={{ scrollbarWidth: 'thin', scrollbarColor: '#3d1066 transparent' }}
       >
         {events.length === 0 ? (
           <p className="text-fg-dim text-[11px]">&gt; nominal crustal creep // no events logged</p>

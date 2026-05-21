@@ -79,7 +79,7 @@ export default function CorpThreatRadar() {
   }, [nextId]);
 
   const toneColor = (tone: Blip['tone']) =>
-    tone === 'danger' ? '#c43a2d' : tone === 'rust' ? '#a5472a' : '#ffb347';
+    tone === 'danger' ? '#ff3366' : tone === 'rust' ? '#a855f7' : '#00d4ff';
 
   const sweepRad = (sweep * Math.PI) / 180;
   const sweepX = CENTER + Math.cos(sweepRad) * MAX_R;
@@ -96,15 +96,15 @@ export default function CorpThreatRadar() {
       <svg viewBox={`0 0 ${SIZE} ${SIZE}`} className="w-full aspect-square max-h-64 mx-auto block">
         <defs>
           <radialGradient id="radar-bg" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#1a120a" />
-            <stop offset="100%" stopColor="#07060a" />
+            <stop offset="0%" stopColor="#0f0b1a" />
+            <stop offset="100%" stopColor="#0a090e" />
           </radialGradient>
           <linearGradient id="sweep-grad" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stopColor="#ffb347" stopOpacity="0" />
-            <stop offset="100%" stopColor="#ffb347" stopOpacity="0.45" />
+            <stop offset="0%" stopColor="#00d4ff" stopOpacity="0" />
+            <stop offset="100%" stopColor="#00d4ff" stopOpacity="0.45" />
           </linearGradient>
         </defs>
-        <circle cx={CENTER} cy={CENTER} r={MAX_R} fill="url(#radar-bg)" stroke="#5a2814" />
+        <circle cx={CENTER} cy={CENTER} r={MAX_R} fill="url(#radar-bg)" stroke="#3d1066" />
         {[0.33, 0.66, 1].map((f) => (
           <circle
             key={f}
@@ -112,12 +112,12 @@ export default function CorpThreatRadar() {
             cy={CENTER}
             r={MAX_R * f}
             fill="none"
-            stroke="#5a2814"
+            stroke="#3d1066"
             strokeDasharray="2 3"
           />
         ))}
-        <line x1={CENTER} y1="10" x2={CENTER} y2={SIZE - 10} stroke="#5a2814" strokeDasharray="2 3" />
-        <line x1="10" y1={CENTER} x2={SIZE - 10} y2={CENTER} stroke="#5a2814" strokeDasharray="2 3" />
+        <line x1={CENTER} y1="10" x2={CENTER} y2={SIZE - 10} stroke="#3d1066" strokeDasharray="2 3" />
+        <line x1="10" y1={CENTER} x2={SIZE - 10} y2={CENTER} stroke="#3d1066" strokeDasharray="2 3" />
         <g transform={`rotate(${sweep} ${CENTER} ${CENTER})`}>
           <path
             d={`M${CENTER},${CENTER} L${CENTER + MAX_R},${CENTER} A${MAX_R},${MAX_R} 0 0 0 ${
@@ -130,9 +130,9 @@ export default function CorpThreatRadar() {
             y1={CENTER}
             x2={CENTER + MAX_R}
             y2={CENTER}
-            stroke="#ffb347"
+            stroke="#00d4ff"
             strokeWidth="1"
-            style={{ filter: 'drop-shadow(0 0 3px #ffb347)' }}
+            style={{ filter: 'drop-shadow(0 0 3px #00d4ff)' }}
           />
         </g>
         {blips.map((b) => {
